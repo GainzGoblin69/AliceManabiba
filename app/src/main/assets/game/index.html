@@ -229,9 +229,6 @@ WORLDS.forEach(w=>[...w.words,...w.pics].forEach(([word,pic])=>{ if(!seenPic.has
 
 const LETTER_NAMES = {a:"ay",b:"bee",c:"see",d:"dee",e:"ee",f:"eff",g:"jee",h:"aitch",i:"eye",j:"jay",k:"kay",l:"el",m:"em",
   n:"en",o:"oh",p:"pee",q:"cue",r:"ar",s:"ess",t:"tee",u:"you",v:"vee",w:"double you",x:"ex",y:"why",z:"zee"};
-/* Letters the TV voice says better in its spell-out mode than from the written name (A and I sounded alike as "ay"/"eye").
-   Every other letter is read from LETTER_NAMES, which the voice says correctly. */
-const SPELL_OUT = new Set(["a","i"]);
 const PRAISE = ["Wonderful!","Curiouser and curiouser!","Splendid!","Marvellous!","Brilliant!","Hooray!","Well done!","Magnificent!"];
 const SUITS = [["♥","red"],["♦","red"],["♠","black"],["♣","black"]];
 
@@ -380,8 +377,7 @@ const TTS = {
       const fin=()=>{ if(done) return; done=true; delete this.waiters[id]; res(); };
       this.waiters[id]=fin; setTimeout(fin, 2200);
       try{
-        if(window.AndroidTTS && AndroidTTS.speakLetter && SPELL_OUT.has(ch)){ AndroidTTS.speakLetter(ch, rate, id); }
-        else if(window.AndroidTTS){ AndroidTTS.speak(LETTER_NAMES[ch]||ch, rate, id); }
+        if(window.AndroidTTS && AndroidTTS.speakLetter){ AndroidTTS.speakLetter(ch, rate, id); }
         else if(window.speechSynthesis){ const u=new SpeechSynthesisUtterance(ch.toUpperCase()); u.rate=rate; u.pitch=1.15; u.onend=fin; u.onerror=fin; speechSynthesis.speak(u); }
         else setTimeout(fin,700);
       }catch(e){ setTimeout(fin,700); }
