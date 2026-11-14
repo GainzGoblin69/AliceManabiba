@@ -41,8 +41,17 @@ class MainActivity : Activity() {
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = true
+            useWideViewPort = true
+            loadWithOverviewMode = true
+            textZoom = 100 // ignore the TV's accessibility font size; the game scales itself
+            setSupportZoom(false)
         }
-        web.webViewClient = WebViewClient()
+        web.setInitialScale(0)
+        web.webViewClient =
+            object : WebViewClient() {
+                override fun onPageFinished(view: WebView, url: String) = refit()
+            }
+        web.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> refit() }
         web.webChromeClient = WebChromeClient()
         web.addJavascriptInterface(TtsBridge(), "AndroidTTS")
         web.addJavascriptInterface(StoreBridge(), "AndroidStore")
@@ -69,6 +78,11 @@ class MainActivity : Activity() {
 
         web.loadUrl("file:///android_asset/game/index.html")
         AppUpdater.checkInBackground(this)
+    }
+
+    /** Ask the game to re-measure the screen (after loading and whenever the view changes size). */
+    private fun refit() {
+        main.post { web.evaluateJavascript("window.fit && window.fit()", null) }
     }
 
     private fun done(id: String) {

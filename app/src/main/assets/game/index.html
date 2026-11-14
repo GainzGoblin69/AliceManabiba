@@ -352,11 +352,30 @@ const ALICE_SVG = `<svg viewBox="0 0 100 170" xmlns="http://www.w3.org/2000/svg"
 const $ = id => document.getElementById(id);
 let screen = "title", focusEl = null, busy = false;
 
-function fit(){ const s=Math.min(innerWidth/1600, innerHeight/900), st=$("stage");
-  st.style.transform=`scale(${s})`; st.style.left=((innerWidth-1600*s)/2)+"px"; st.style.top=((innerHeight-900*s)/2)+"px"; }
-addEventListener("resize",fit); fit();
+/* Fit the 1600x900 stage to the screen. TVs report sizes in different units (innerWidth can be physical pixels
+   while CSS uses density pixels), so measure a 100vw x 100vh box in the same CSS pixels the stage is drawn in. */
+const probe=document.createElement("div");
+probe.style.cssText="position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;visibility:hidden";
+document.body.appendChild(probe);
+let lastFit="";
+function fitStage(){
+  const r=probe.getBoundingClientRect();
+  let w=r.width, h=r.height;
+  const de=document.documentElement;
+  if(de.clientWidth>0) w=Math.min(w,de.clientWidth);
+  if(de.clientHeight>0) h=Math.min(h,de.clientHeight);
+  if(window.visualViewport && visualViewport.width>0){ w=Math.min(w,visualViewport.width); h=Math.min(h,visualViewport.height); }
+  if(!(w>0&&h>0)) return;
+  const key=w+"x"+h; if(key===lastFit) return; lastFit=key;
+  const s=Math.min(w/1600,h/900), st=$("stage");
+  st.style.transform=`scale(${s})`; st.style.left=((w-1600*s)/2)+"px"; st.style.top=((h-900*s)/2)+"px";
+}
+window.fit=()=>{ lastFit=""; fitStage(); };
+addEventListener("resize",fitStage); addEventListener("load",window.fit);
+if(window.visualViewport) visualViewport.addEventListener("resize",fitStage);
+setInterval(fitStage,700); fitStage();
 
-function show(name){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===name)); screen=name; }
+function show(name){ fitStage(); document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===name)); screen=name; }
 function focusables(){ return [...document.querySelectorAll(`#${screen} .fx`)].filter(e=>!e.classList.contains("gone")); }
 function setFocus(el, sound){ if(focusEl===el) return; if(focusEl) focusEl.classList.remove("focus"); focusEl=el; if(el){ el.classList.add("focus"); if(sound) Snd.play("move"); } }
 function center(el){ const r=el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}; }
