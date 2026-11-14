@@ -88,15 +88,15 @@
 
   /* ---------- level ---------- */
   #mirror{position:absolute;left:560px;top:108px;width:480px;height:420px}
-  #mirror .glass{position:absolute;inset:26px;border-radius:50%;
+  #mirror .glass, #wardMirror .glass{position:absolute;inset:26px;border-radius:50%;
       background:radial-gradient(ellipse at 40% 30%,#ffffff 0%,#eaf4ff 45%,#b9d3ef 100%);
       box-shadow:inset 0 0 40px rgba(80,110,160,.45)}
-  #mirror .frame{position:absolute;inset:0;border-radius:50%;border:22px solid transparent;
+  #mirror .frame, #wardMirror .frame{position:absolute;inset:0;border-radius:50%;border:22px solid transparent;
       background:linear-gradient(#ffe9a3,#c8952a,#ffe39a,#a87418) border-box;
       -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);
       mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);
       filter:drop-shadow(0 8px 10px rgba(60,20,40,.4))}
-  #mirror .crest{position:absolute;left:50%;top:-34px;transform:translateX(-50%);font-size:56px}
+  #mirror .crest, #wardMirror .crest{position:absolute;left:50%;top:-34px;transform:translateX(-50%);font-size:56px}
   #pic{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:230px;line-height:1;
       filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
   #pic.pop{animation:pop .6s}
@@ -133,11 +133,43 @@
   .node.sel{box-shadow:0 0 0 6px #fff,0 0 34px 14px var(--gold),0 6px 0 #8e6418;transform:scale(1.15)}
   .node.current:not(.sel){animation:pulse 1.4s infinite}
   @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,255,255,.8),0 0 24px 8px var(--gold),0 6px 0 #8e6418}}
-  #mapAlice{position:absolute;width:90px;margin:-178px 0 0 -45px;transition:left .8s ease, top .8s ease;z-index:20;pointer-events:none;
+  #mapAlice{position:absolute;width:90px;margin:-212px 0 0 -45px;transition:left .8s ease, top .8s ease;z-index:20;pointer-events:none;
       filter:drop-shadow(0 6px 4px rgba(0,0,0,.35))}
   #mapAlice.hop{animation:hop .4s 2}
   @keyframes hop{50%{transform:translateY(-30px)}}
   #mapHelp{left:50%;bottom:22px;transform:translateX(-50%);font-size:24px}
+  #btnWardrobe{left:24px;top:808px;font-size:28px;padding:10px 26px}
+  #btnWardrobe.newstuff::after{content:"✨ New!";position:absolute;right:-18px;top:-22px;background:var(--rose);color:#fff;font-size:18px;
+      padding:3px 10px;border-radius:14px;animation:bob 1.6s infinite ease-in-out}
+
+  /* ---------- wardrobe ---------- */
+  #wardMirror{position:absolute;left:46px;top:110px;width:490px;height:720px}
+  #wardMirror .glass{border-radius:46%}
+  #wardMirror .frame{border-radius:46%}
+  #wardAlice{position:absolute;left:115px;top:96px;width:260px;animation:bob 5s infinite ease-in-out}
+  #wardTitle{left:640px;top:16px;font-size:44px}
+  #btnWardBack{left:24px;top:20px;padding:8px 20px;font-size:24px}
+  #wardPoints{right:24px;top:20px}
+  #wardTabs{position:absolute;left:584px;top:112px;width:990px;height:80px}
+  .tab{position:absolute;top:0;width:152px;height:74px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:rgba(255,248,234,.85);border:4px solid var(--gold2);font-size:19px;font-weight:700;color:var(--ink);line-height:1.1}
+  .tab span{font-size:28px}
+  .tab.active{background:linear-gradient(#f06b90,#c63c64);color:#fff;border-color:#fff}
+  .tab.focus{transform:scale(1.1);box-shadow:0 0 0 5px #fff,0 0 26px 10px var(--gold)}
+  #wardGrid{position:absolute;left:584px;top:212px;width:990px;height:600px}
+  .tile{position:absolute;width:150px;height:186px;border-radius:20px;background:linear-gradient(#fffdf8,#f6e9cf);
+      border:4px solid var(--gold2);box-shadow:0 6px 12px rgba(40,10,50,.25);--rot:0deg;transform:rotate(var(--rot)) scale(var(--sc,1))}
+  .tile .pv{position:absolute;left:9px;top:6px;width:124px;height:124px}
+  .tile .pv svg{width:100%;height:100%}
+  .tile .nm{position:absolute;top:128px;left:0;right:0;text-align:center;font-size:18px;font-weight:700}
+  .tile .pr{position:absolute;top:153px;left:0;right:0;text-align:center;font-size:17px;color:#7a4a64}
+  .tile.locked{background:linear-gradient(#f4eef4,#e2d8e6)}
+  .tile.wearing{border-color:var(--rose);box-shadow:0 0 0 4px #ffd6e3,0 6px 12px rgba(40,10,50,.25)}
+  .tile.focus{--sc:1.12;box-shadow:0 0 0 5px #fff,0 0 28px 12px var(--gold)}
+  .tile.wrong{animation:wiggle .45s}
+  #wardMsg{left:584px;top:826px;width:990px;text-align:center;font-size:24px;white-space:normal}
+  #ovAlice{position:absolute;left:90px;bottom:30px;width:240px;animation:dance .7s infinite alternate ease-in-out}
+  @keyframes dance{from{transform:rotate(-6deg) translateY(0)}to{transform:rotate(6deg) translateY(-24px)}}
   #mapLogo{left:24px;top:18px;font-size:44px}
 
   /* ---------- overlay ---------- */
@@ -181,7 +213,8 @@
     <div id="mapWorld"></div>
     <div id="mapLogo" class="ribbon">Alice Manabiba</div>
     <div id="mapPoints" class="pill">💖 0</div>
-    <div id="mapHelp" class="pill">◀ ▶ choose a spot &nbsp;·&nbsp; OK to play</div>
+    <div id="mapHelp" class="pill">◀ ▶ choose a spot &nbsp;·&nbsp; OK to play &nbsp;·&nbsp; ▼ wardrobe</div>
+    <div id="btnWardrobe" class="btn fx" data-act="wardrobe">👗 Wardrobe</div>
   </section>
 
   <!-- ======================= LEVEL ======================= -->
@@ -197,9 +230,22 @@
     <div id="cards"></div>
   </section>
 
-  <div id="overlay"><div id="ovBig"></div><div id="ovWord"></div><div id="ovStars"></div><div id="ovPts"></div></div>
+  <!-- ======================= WARDROBE ======================= -->
+  <section id="wardrobe" class="screen">
+    <div class="sky"></div><div class="floor"></div><div class="sparkles"></div>
+    <div id="wardMirror"><div class="glass"></div><div id="wardAlice"></div><div class="frame"></div><div class="crest">✨</div></div>
+    <div id="wardTitle" class="ribbon">Alice's Wardrobe</div>
+    <div id="btnWardBack" class="btn fx" data-act="tomap">🗺️ Map</div>
+    <div id="wardPoints" class="pill">💖 0</div>
+    <div id="wardTabs"></div>
+    <div id="wardGrid"></div>
+    <div id="wardMsg" class="pill"></div>
+  </section>
+
+  <div id="overlay"><div id="ovAlice"></div><div id="ovBig"></div><div id="ovWord"></div><div id="ovStars"></div><div id="ovPts"></div></div>
 </div>
 
+<script src="wardrobe.js"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -241,11 +287,11 @@ const OLD_ORDER = WORLDS.flatMap(w=>w.words.map(([word])=>"s:"+word));   // buil
 const Store = {
   read(){ try{ return window.AndroidStore ? AndroidStore.get() : localStorage.getItem("am_save"); }catch(e){ return null; } },
   get(){
-    const fresh={unlocked:0, stars:{}, points:0, music:true};
+    const fresh={unlocked:0, stars:{}, points:0, music:true, owned:{}, look:cleanLook({})};
     let raw=this.read(); if(!raw) return fresh;
     let d; try{ d=JSON.parse(raw); }catch(e){ return fresh; }
     if(!d || typeof d!=="object") return fresh;
-    const out={unlocked:0, stars:{}, points:+d.points||0, music:d.music!==false};
+    const out={unlocked:0, stars:{}, points:+d.points||0, music:d.music!==false, owned:(d.owned&&typeof d.owned==="object")?d.owned:{}, look:cleanLook(d.look)};
     let done={}, frontier=null;
     if(d.v===2){ done=d.done||{}; frontier=d.frontier; }
     else { // first version: stars and unlocked by position among the 40 spelling words
@@ -260,7 +306,7 @@ const Store = {
   },
   set(s){
     const done={}; for(const i in s.stars){ if(LEVELS[i]) done[LEVELS[i].id]=s.stars[i]; }
-    const raw=JSON.stringify({v:2, done, frontier:LEVELS[s.unlocked].id, points:s.points, music:s.music});
+    const raw=JSON.stringify({v:2, done, frontier:LEVELS[s.unlocked].id, points:s.points, music:s.music, owned:s.owned, look:s.look});
     try{ if(window.AndroidStore) AndroidStore.set(raw); else localStorage.setItem("am_save",raw); }catch(e){}
   }
 };
@@ -393,24 +439,7 @@ window.__extMusic = on => { Snd.ext=!!on; Snd.applyMusic(1.2); };
 /* =====================================================================
    ART: an original storybook Alice (pinafore + hair band)
    ===================================================================== */
-const ALICE_SVG = `<svg viewBox="0 0 100 170" xmlns="http://www.w3.org/2000/svg">
- <path d="M24 44 Q16 92 30 104 L70 104 Q84 92 76 44 Z" fill="#e8b84a"/>
- <rect x="38" y="136" width="8" height="24" rx="3" fill="#fff"/><rect x="54" y="136" width="8" height="24" rx="3" fill="#fff"/>
- <ellipse cx="42" cy="162" rx="8" ry="5" fill="#2a1b2e"/><ellipse cx="58" cy="162" rx="8" ry="5" fill="#2a1b2e"/>
- <path d="M34 76 L66 76 L84 140 Q50 150 16 140 Z" fill="#e2557a"/>
- <path d="M38 80 L62 80 L72 136 Q50 143 28 136 Z" fill="#fffaf2"/>
- <path d="M38 80 L62 80 L60 92 L40 92 Z" fill="#fffaf2" stroke="#f0d7df" stroke-width="1.5"/>
- <path d="M34 78 Q24 96 22 110" stroke="#f6d2bd" stroke-width="7" stroke-linecap="round" fill="none"/>
- <path d="M66 78 Q76 96 78 110" stroke="#f6d2bd" stroke-width="7" stroke-linecap="round" fill="none"/>
- <rect x="45" y="64" width="10" height="14" fill="#f6d2bd"/>
- <circle cx="50" cy="46" r="22" fill="#f8dcc8"/>
- <path d="M27 46 Q26 20 50 20 Q74 20 73 46 Q68 32 50 32 Q32 32 27 46 Z" fill="#f0c454"/>
- <path d="M29 36 Q50 18 71 36" stroke="#2a1b2e" stroke-width="5" fill="none" stroke-linecap="round"/>
- <circle cx="42" cy="48" r="3" fill="#3a2246"/><circle cx="58" cy="48" r="3" fill="#3a2246"/>
- <circle cx="43" cy="47" r="1" fill="#fff"/><circle cx="59" cy="47" r="1" fill="#fff"/>
- <circle cx="37" cy="55" r="4" fill="#f7a6b6" opacity=".7"/><circle cx="63" cy="55" r="4" fill="#f7a6b6" opacity=".7"/>
- <path d="M44 57 Q50 62 56 57" stroke="#b03a5a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-</svg>`;
+/* Alice herself is drawn by aliceSVG() in wardrobe.js, wearing whatever she has on (save.look). */
 
 /* =====================================================================
    SCREEN + FOCUS (remote D-pad, game controller, mouse/air-mouse)
@@ -443,7 +472,7 @@ setInterval(fitStage,700); fitStage();
 
 function show(name){ fitStage(); document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===name)); screen=name; }
 function focusables(){ return [...document.querySelectorAll(`#${screen} .fx`)].filter(e=>!e.classList.contains("gone") && e.offsetParent!==null); }
-function setFocus(el, sound){ if(focusEl===el) return; if(focusEl) focusEl.classList.remove("focus"); focusEl=el; if(el){ el.classList.add("focus"); if(sound) Snd.play("move"); } }
+function setFocus(el, sound){ if(focusEl===el) return; if(focusEl) focusEl.classList.remove("focus"); focusEl=el; if(el){ el.classList.add("focus"); if(sound) Snd.play("move"); wardFocus(el); } }
 function center(el){ const r=el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}; }
 function moveFocus(dir){
   const list=focusables(); if(!list.length) return;
@@ -465,7 +494,7 @@ function input(k){
   if(overlayOn){ if(k==="ok"||k==="back") skipOverlay(); return true; }
   if(screen==="map") return mapInput(k);
   if(k==="back"){
-    if(screen==="level"){ goMap(); return true; }
+    if(screen==="level"||screen==="wardrobe"){ goMap(); return true; }
     return false;                       // on the title screen Back leaves the app
   }
   if(k==="hint1" && screen==="level"){ hint1(); return true; }
@@ -505,12 +534,15 @@ function activate(el){
   const a=el.dataset.act;
   if(a==="play"){ Snd.play("start"); goMap(); }
   else if(a==="reset"){
-    if(el.dataset.armed){ save={unlocked:0,stars:{},points:0,music:save.music}; Store.set(save); delete el.dataset.armed;
+    if(el.dataset.armed){ save={unlocked:0,stars:{},points:0,music:save.music,owned:{},look:cleanLook({})}; refreshAlice(); Store.set(save); delete el.dataset.armed;
       el.innerHTML="✓ Fresh start!"; buildMap(); Snd.play("start"); setTimeout(()=>el.innerHTML="↺ Start over",1500); }
     else { el.dataset.armed="1"; el.innerHTML="Press again to erase"; setTimeout(()=>{delete el.dataset.armed; el.innerHTML="↺ Start over";},3000); }
   }
   else if(a==="music"){ Snd.setMusic(!save.music); el.innerHTML="🎵 Music: "+(save.music?"On":"Off"); }
   else if(a==="folder"){ try{ AndroidMusic.openSettings(); }catch(e){} }
+  else if(a==="wardrobe"){ Snd.play("start"); goWardrobe(); }
+  else if(el.dataset.tab) showWardTab(el.dataset.tab);
+  else if(el.dataset.item) wardPick(el);
   else if(a==="hint1") hint1();
   else if(a==="hint2") hint2();
   else if(a==="tomap") goMap();
@@ -538,7 +570,7 @@ function makePicCard(word, pic, k){
    TITLE
    ===================================================================== */
 function buildTitle(){
-  $("titleAlice").innerHTML=ALICE_SVG;
+  $("titleAlice").innerHTML=aliceSVG(save.look);
   const fan=$("fan"); fan.innerHTML="";
   "ALICE".split("").forEach((ch,i)=>{ const c=makeCard(ch.toLowerCase(),i); c.classList.remove("fx");
     c.style.left=(234+0)+"px"; c.style.top="40px"; c.style.width="110px"; c.style.height="154px";
@@ -585,7 +617,7 @@ function buildMap(){
   LEVELS.forEach((lv,i)=>{
     const p=nodePos[i], n=document.createElement("div"); n.className="node"; n.dataset.i=i;
     world.appendChild(n); n.style.left=p.x+"px"; n.style.top=p.y+"px"; });
-  const a=document.createElement("div"); a.id="mapAlice"; a.innerHTML=ALICE_SVG; world.appendChild(a);
+  const a=document.createElement("div"); a.id="mapAlice"; a.innerHTML=aliceSVG(save.look); world.appendChild(a);
   refreshMap(false);
 }
 function refreshMap(animate){
@@ -605,8 +637,16 @@ function refreshMap(animate){
 function selectNode(i){ if(i<0||i>save.unlocked||i>=LEVELS.length||i===mapSel) return false; mapSel=i; Snd.play("hop");
   $("mapAlice").classList.remove("hop"); void $("mapAlice").offsetWidth; $("mapAlice").classList.add("hop"); refreshMap(true); return true; }
 function goMap(){ TTS.stop(); busy=false; setFocus(null); show("map");
-  mapSel=Math.min(mapSel, save.unlocked); refreshMap(false); }
+  mapSel=Math.min(mapSel, save.unlocked); refreshMap(false); refreshAlice(); }
 function mapInput(k){
+  const wb=$("btnWardrobe");
+  if(focusEl===wb){                       // the Wardrobe button under the path
+    if(k==="ok"){ Snd.play("start"); goWardrobe(); }
+    else if(k==="back") goTitle();
+    else { setFocus(null); Snd.play("move"); }
+    return true;
+  }
+  if(k==="down"){ setFocus(wb,true); return true; }
   if(k==="left"||k==="up") selectNode(mapSel-1);
   else if(k==="right"||k==="down") selectNode(mapSel+1);
   else if(k==="ok") startLevel(mapSel);
@@ -733,7 +773,8 @@ async function levelDone(){
   $("ovBig").textContent=isLast? "Queen of Wonderland!" : praise;
   $("ovWord").textContent=cur.word.toUpperCase();
   $("ovStars").innerHTML=[0,1,2].map(k=>`<span style="animation-delay:${.3+k*.25}s;${k<stars?"":"filter:grayscale(1);opacity:.35"}">⭐</span>`).join("");
-  $("ovPts").textContent=`+${pts} 💖`;
+  const nw=cheapestNew(save); refreshAlice();
+  $("ovPts").textContent=`+${pts} 💖` + (nw && nw.price<=save.points ? "  ·  New things in the wardrobe! 👗" : "");
   let skipped=false; const wait=new Promise(r=>{ overlaySkip=()=>{skipped=true;r();}; });
   (async()=>{ Snd.setDuck(.3); await TTS.say(cur.word,.75); if(!skipped) await TTS.say(isLast?"You are the Queen of Wonderland!":praise,.95); Snd.setDuck(1); })();
   await Promise.race([wait, sleep(isLast?6000:3600)]);

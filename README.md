@@ -22,6 +22,13 @@ pictures. Pick the one that matches. A wrong pick buzzes and says what that pict
 
 Progress is saved by level name the moment a word is finished, so adding levels never loses it.
 
+## Alice's Wardrobe
+
+Hearts are spent in the Wardrobe (▼ from the map): 15 hair colors, 9 hairstyles, 10 outfits, 15 dress colors,
+11 extras (tiara, bunny ears, top hat, crown…) and 6 skin tones (free). Focusing anything tries it on in the mirror;
+OK buys it, or wears it if it's already hers. Her look shows on the title screen, the map and every celebration.
+Items and prices are in `app/src/main/assets/game/wardrobe.js`.
+
 ## Background music
 
 On the title screen, **⚙ Music folder** takes a Copyparty folder on your server and its password, the same
