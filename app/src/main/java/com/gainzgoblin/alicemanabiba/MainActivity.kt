@@ -2,7 +2,13 @@ package com.gainzgoblin.alicemanabiba
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.text.InputType
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -49,12 +55,20 @@ class MainActivity : Activity() {
         web.setInitialScale(0)
         web.webViewClient =
             object : WebViewClient() {
-                override fun onPageFinished(view: WebView, url: String) = refit()
+                override fun onPageFinished(view: WebView, url: String) {
+                    refit()
+                    view.evaluateJavascript("window.__extMusic && window.__extMusic(${BackgroundMusic.isPlaying()})", null)
+                }
             }
         web.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> refit() }
         web.webChromeClient = WebChromeClient()
         web.addJavascriptInterface(TtsBridge(), "AndroidTTS")
         web.addJavascriptInterface(StoreBridge(), "AndroidStore")
+        web.addJavascriptInterface(MusicBridge(), "AndroidMusic")
+        BackgroundMusic.init(this)
+        BackgroundMusic.onPlaying = { playing ->
+            web.evaluateJavascript("window.__extMusic && window.__extMusic($playing)", null)
+        }
         web.isFocusable = false // keys come through dispatchKeyEvent below
         setContentView(web)
         hideSystemBars()
@@ -179,12 +193,14 @@ class MainActivity : Activity() {
         tts?.stop()
         web.onPause()
         web.pauseTimers() // music stops while the app is in the background
+        BackgroundMusic.onBackground()
     }
 
     override fun onResume() {
         super.onResume()
         web.resumeTimers()
         web.onResume()
+        BackgroundMusic.onForeground()
     }
 
     override fun onDestroy() {
@@ -216,6 +232,96 @@ class MainActivity : Activity() {
         fun isReady(): Boolean = ttsReady
     }
 
+    inner class MusicBridge {
+        @JavascriptInterface
+        fun setEnabled(on: Boolean) = BackgroundMusic.setEnabled(on)
+
+        @JavascriptInterface
+        fun duck(on: Boolean) = BackgroundMusic.duck(on)
+
+        @JavascriptInterface
+        fun openSettings() {
+            main.post { showMusicSettings() }
+        }
+    }
+
+    /** Asks once for the music folder's address and password, checks it, and saves it. */
+    private fun showMusicSettings() {
+        val current = BackgroundMusic.settings()
+        val pad = (24 * resources.displayMetrics.density).toInt()
+        val url =
+            EditText(this).apply {
+                hint = "Folder address"
+                setText(current.url.ifBlank { BackgroundMusic.SUGGESTED })
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
+                setSingleLine()
+            }
+        val password =
+            EditText(this).apply {
+                hint = "Password"
+                setText(current.password)
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                setSingleLine()
+            }
+        val status =
+            TextView(this).apply {
+                text = "Songs in this folder and the folders inside it play in a shuffle. Leave the address empty for the built-in music box."
+                setPadding(0, pad / 2, 0, 0)
+            }
+        val box =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(pad, pad / 2, pad, 0)
+                addView(url)
+                addView(password)
+                addView(status)
+            }
+        val dialog =
+            AlertDialog.Builder(this)
+                .setTitle("Music folder")
+                .setView(box)
+                .setPositiveButton("Save", null)
+                .setNegativeButton("Cancel", null)
+                .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { button ->
+                val address = url.text.toString().trim()
+                val pw = password.text.toString()
+                if (address.isEmpty()) {
+                    BackgroundMusic.saveFolder("", "", emptyList())
+                    dialog.dismiss()
+                    return@setOnClickListener
+                }
+                button.isEnabled = false
+                status.setTextColor(Color.GRAY)
+                status.text = "Checking the folder…"
+                Thread {
+                    val result = runCatching { BackgroundMusic.scan(address, pw) }
+                    main.post {
+                        button.isEnabled = true
+                        val songs = result.getOrNull()
+                        when {
+                            songs == null -> {
+                                status.setTextColor(0xFFC8203A.toInt())
+                                status.text = "Couldn't open it: ${result.exceptionOrNull()?.message ?: "no connection"}"
+                            }
+                            songs.isEmpty() -> {
+                                status.setTextColor(0xFFC8203A.toInt())
+                                status.text = "That folder opened, but there are no songs in it (mp3, m4a, ogg, flac or wav)."
+                            }
+                            else -> {
+                                BackgroundMusic.saveFolder(address, pw, songs)
+                                android.widget.Toast.makeText(this, "Found ${songs.size} songs", android.widget.Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                            }
+                        }
+                    }
+                }.start()
+            }
+        }
+        dialog.show()
+    }
+
     inner class StoreBridge {
         private val prefs = getSharedPreferences("save", Context.MODE_PRIVATE)
 
@@ -224,7 +330,7 @@ class MainActivity : Activity() {
 
         @JavascriptInterface
         fun set(json: String) {
-            prefs.edit().putString("game", json).apply()
+            prefs.edit().putString("game", json).commit() // written straight away, so progress survives the TV being switched off
         }
     }
 }

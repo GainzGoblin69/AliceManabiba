@@ -15,7 +15,18 @@ letters in order with the remote or a controller to spell the word, then walk Al
 | Back to map / title | Back | B | Esc |
 
 A wrong card gives a soft buzz. Each word is worth 10 hearts, plus 5 for no wrong picks, and earns up to 3 stars.
-Hints are free. There are 40 words over 8 Wonderland stops, from three letters up to six.
+Hints are free. There are 56 levels over 8 Wonderland stops, from three letters up to six.
+
+**Find the picture** levels (🃏 on the map) turn it around: the word is spelled out and the cards show
+pictures. Pick the one that matches. A wrong pick buzzes and says what that picture is.
+
+Progress is saved by level name the moment a word is finished, so adding levels never loses it.
+
+## Background music
+
+On the title screen, **⚙ Music folder** takes a Copyparty folder on your server and its password, the same
+way RomM TV does. Every song in it (and folders inside it) plays in a shuffle, quietly, dipping while the game
+talks. Without a folder, or if the server can't be reached, the built-in music-box waltz plays.
 
 ## How it's built
 

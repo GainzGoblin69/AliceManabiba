@@ -61,6 +61,9 @@
   #btnPlay{left:640px;top:660px;width:320px;font-size:44px}
   #btnReset{left:470px;top:790px;width:300px;font-size:26px;padding:10px 20px}
   #btnMusic{left:830px;top:790px;width:300px;font-size:26px;padding:10px 20px}
+  body.app #btnReset{left:290px} body.app #btnMusic{left:650px}
+  #btnFolder{left:1010px;top:790px;width:300px;font-size:26px;padding:10px 20px;display:none}
+  body.app #btnFolder{display:flex}
 
   /* ---------- playing cards ---------- */
   .card{position:absolute;width:92px;height:128px;border-radius:11px;
@@ -77,6 +80,9 @@
   .card.wrong{animation:wiggle .45s}
   @keyframes wiggle{0%,100%{transform:rotate(var(--rot)) scale(var(--sc,1))}20%{transform:rotate(calc(var(--rot) - 12deg)) scale(var(--sc,1))}
       40%{transform:rotate(calc(var(--rot) + 12deg)) scale(var(--sc,1))}60%{transform:rotate(calc(var(--rot) - 8deg)) scale(var(--sc,1))}80%{transform:rotate(calc(var(--rot) + 6deg)) scale(var(--sc,1))}}
+  .card.pic{width:150px;height:210px;border-radius:14px}
+  .card.pic .mid{font-size:104px}
+  .card.pic .tl,.card.pic .br{font-size:28px;width:30px}
   .card.flying{z-index:80;--rot:0deg;--sc:.8;box-shadow:0 0 30px 10px #fff7c0}
   .card.gone{display:none}
 
@@ -123,6 +129,7 @@
   .node.locked{background:radial-gradient(circle at 35% 30%,#eee,#b9b0c4);border-color:#7d7290;color:#6d6280;font-size:30px;box-shadow:0 6px 0 #5a4f6c}
   .node.done{background:radial-gradient(circle at 35% 30%,#fff,#ffd6e3);border-color:var(--rose);font-size:52px}
   .node .stars{position:absolute;top:96px;left:50%;transform:translateX(-50%);font-size:22px;white-space:nowrap;text-shadow:0 2px 2px rgba(0,0,0,.3)}
+  .node .badge{position:absolute;right:-14px;top:-12px;font-size:30px;transform:rotate(12deg)}
   .node.sel{box-shadow:0 0 0 6px #fff,0 0 34px 14px var(--gold),0 6px 0 #8e6418;transform:scale(1.15)}
   .node.current:not(.sel){animation:pulse 1.4s infinite}
   @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,255,255,.8),0 0 24px 8px var(--gold),0 6px 0 #8e6418}}
@@ -165,6 +172,7 @@
     <div id="btnPlay" class="btn fx" data-act="play">▶ Play</div>
     <div id="btnReset" class="btn fx" data-act="reset">↺ Start over</div>
     <div id="btnMusic" class="btn fx" data-act="music">🎵 Music: On</div>
+    <div id="btnFolder" class="btn fx" data-act="folder">⚙ Music folder</div>
   </section>
 
   <!-- ======================= MAP ======================= -->
@@ -198,17 +206,26 @@
    WORDS: 8 Wonderland stops, 5 words each, getting longer as you go
    ===================================================================== */
 const WORLDS = [
-  {name:"Down the Rabbit Hole",   icons:["🐇","🕳️","🕰️"], tint:"#d9cdf5", words:[["cat","🐈"],["dog","🐕"],["cow","🐄"],["sun","☀️"],["hat","🎩"]]},
-  {name:"The Hall of Tiny Doors", icons:["🚪","🗝️","🧁"], tint:"#c7ece6", words:[["key","🔑"],["egg","🥚"],["bee","🐝"],["cup","☕"],["pig","🐖"]]},
-  {name:"The Pool of Tears",      icons:["💧","🐭","🦆"], tint:"#bfe0fb", words:[["fish","🐟"],["duck","🦆"],["frog","🐸"],["boat","⛵"],["star","⭐"]]},
-  {name:"The Caterpillar's Mushroom", icons:["🍄","🐛","🌿"], tint:"#d3efc0", words:[["moon","🌙"],["rose","🌹"],["tree","🌳"],["book","📖"],["cake","🍰"]]},
-  {name:"The Cheshire Cat's Grove", icons:["😸","🌳","🌙"], tint:"#e6cdf0", words:[["baby","👶"],["bird","🐦"],["bear","🐻"],["lion","🦁"],["ball","⚽"]]},
-  {name:"The Mad Tea Party",      icons:["☕","🎩","🍰"], tint:"#fbd3e1", words:[["apple","🍎"],["clock","🕰️"],["mouse","🐭"],["shirt","👕"],["crown","👑"]]},
-  {name:"The Queen's Croquet Garden", icons:["🌹","🃏","🦔"], tint:"#f8cfcf", words:[["heart","❤️"],["horse","🐎"],["sheep","🐑"],["house","🏠"],["dress","👗"]]},
-  {name:"The Court of Hearts",    icons:["👑","♥️","🏰"], tint:"#fbe6b5", words:[["banana","🍌"],["rabbit","🐇"],["cookie","🍪"],["flower","🌸"],["cherry","🍒"]]},
+  {name:"Down the Rabbit Hole",   icons:["🐇","🕳️","🕰️"], tint:"#d9cdf5", words:[["cat","🐈"],["dog","🐕"],["cow","🐄"],["sun","☀️"],["hat","🎩"]], pics:[["car","🚗"],["bus","🚌"]]},
+  {name:"The Hall of Tiny Doors", icons:["🚪","🗝️","🧁"], tint:"#c7ece6", words:[["key","🔑"],["egg","🥚"],["bee","🐝"],["cup","☕"],["pig","🐖"]], pics:[["ant","🐜"],["bed","🛏️"]]},
+  {name:"The Pool of Tears",      icons:["💧","🐭","🦆"], tint:"#bfe0fb", words:[["fish","🐟"],["duck","🦆"],["frog","🐸"],["boat","⛵"],["star","⭐"]], pics:[["crab","🦀"],["ship","🚢"]]},
+  {name:"The Caterpillar's Mushroom", icons:["🍄","🐛","🌿"], tint:"#d3efc0", words:[["moon","🌙"],["rose","🌹"],["tree","🌳"],["book","📖"],["cake","🍰"]], pics:[["snail","🐌"],["leaf","🍃"]]},
+  {name:"The Cheshire Cat's Grove", icons:["😸","🌳","🌙"], tint:"#e6cdf0", words:[["baby","👶"],["bird","🐦"],["bear","🐻"],["lion","🦁"],["ball","⚽"]], pics:[["owl","🦉"],["fox","🦊"]]},
+  {name:"The Mad Tea Party",      icons:["☕","🎩","🍰"], tint:"#fbd3e1", words:[["apple","🍎"],["clock","🕰️"],["mouse","🐭"],["shirt","👕"],["crown","👑"]], pics:[["spoon","🥄"],["bread","🍞"]]},
+  {name:"The Queen's Croquet Garden", icons:["🌹","🃏","🦔"], tint:"#f8cfcf", words:[["heart","❤️"],["horse","🐎"],["sheep","🐑"],["house","🏠"],["dress","👗"]], pics:[["pear","🍐"],["train","🚂"]]},
+  {name:"The Court of Hearts",    icons:["👑","♥️","🏰"], tint:"#fbe6b5", words:[["banana","🍌"],["rabbit","🐇"],["cookie","🍪"],["flower","🌸"],["cherry","🍒"]], pics:[["castle","🏰"],["candy","🍬"]]},
 ];
+/* Each stop: spell, spell, FIND THE PICTURE, spell, spell, FIND THE PICTURE, spell */
 const LEVELS = [];
-WORLDS.forEach((w,wi)=>w.words.forEach(([word,pic])=>LEVELS.push({w:wi,word,pic})));
+WORLDS.forEach((w,wi)=>{
+  const sp=w.words.map(([word,pic])=>({w:wi,word,pic,kind:"spell",id:"s:"+word}));
+  const pk=w.pics.map(([word,pic])=>({w:wi,word,pic,kind:"pick",id:"p:"+word}));
+  [sp[0],sp[1],pk[0],sp[2],sp[3],pk[1],sp[4]].forEach(l=>LEVELS.push(l));
+});
+const LEVEL_INDEX = {}; LEVELS.forEach((l,i)=>LEVEL_INDEX[l.id]=i);
+/* every picture in the game, for the wrong choices on picture cards */
+const ALL_PICS = []; const seenPic = new Set();
+WORLDS.forEach(w=>[...w.words,...w.pics].forEach(([word,pic])=>{ if(!seenPic.has(pic)){ seenPic.add(pic); ALL_PICS.push([word,pic]); } }));
 
 const LETTER_NAMES = {a:"ay",b:"bee",c:"see",d:"dee",e:"ee",f:"eff",g:"jee",h:"aitch",i:"eye",j:"jay",k:"kay",l:"el",m:"em",
   n:"en",o:"oh",p:"pee",q:"cue",r:"ar",s:"ess",t:"tee",u:"you",v:"vee",w:"double you",x:"ex",y:"why",z:"zee"};
@@ -218,11 +235,34 @@ const SUITS = [["♥","red"],["♦","red"],["♠","black"],["♣","black"]];
 /* =====================================================================
    SAVE (Android bridge if present, otherwise localStorage)
    ===================================================================== */
+/* Progress is stored by level name ("s:cat", "p:car"), not position, so new levels never lose progress.
+   In memory: save.unlocked = furthest level open, save.stars[index] = stars earned. */
+const OLD_ORDER = WORLDS.flatMap(w=>w.words.map(([word])=>"s:"+word));   // build 1-2 saved by position in this list
 const Store = {
-  get(){ try{ const raw = window.AndroidStore ? AndroidStore.get() : localStorage.getItem("am_save");
-         if(raw){ const s=JSON.parse(raw); if(s && typeof s.unlocked==="number") return s; } }catch(e){}
-         return {unlocked:0, stars:{}, points:0, music:true}; },
-  set(s){ const raw=JSON.stringify(s); try{ if(window.AndroidStore) AndroidStore.set(raw); else localStorage.setItem("am_save",raw);}catch(e){} }
+  read(){ try{ return window.AndroidStore ? AndroidStore.get() : localStorage.getItem("am_save"); }catch(e){ return null; } },
+  get(){
+    const fresh={unlocked:0, stars:{}, points:0, music:true};
+    let raw=this.read(); if(!raw) return fresh;
+    let d; try{ d=JSON.parse(raw); }catch(e){ return fresh; }
+    if(!d || typeof d!=="object") return fresh;
+    const out={unlocked:0, stars:{}, points:+d.points||0, music:d.music!==false};
+    let done={}, frontier=null;
+    if(d.v===2){ done=d.done||{}; frontier=d.frontier; }
+    else { // first version: stars and unlocked by position among the 40 spelling words
+      for(const k in (d.stars||{})){ const id=OLD_ORDER[+k]; if(id) done[id]=d.stars[k]; }
+      frontier=OLD_ORDER[d.unlocked]||null;
+    }
+    let furthest=-1;
+    for(const id in done){ const i=LEVEL_INDEX[id]; if(i!==undefined){ out.stars[i]=done[id]; furthest=Math.max(furthest,i); } }
+    const fi = frontier && LEVEL_INDEX[frontier]!==undefined ? LEVEL_INDEX[frontier] : 0;
+    out.unlocked=Math.min(LEVELS.length-1, Math.max(fi, furthest+1));
+    return out;
+  },
+  set(s){
+    const done={}; for(const i in s.stars){ if(LEVELS[i]) done[LEVELS[i].id]=s.stars[i]; }
+    const raw=JSON.stringify({v:2, done, frontier:LEVELS[s.unlocked].id, points:s.points, music:s.music});
+    try{ if(window.AndroidStore) AndroidStore.set(raw); else localStorage.setItem("am_save",raw); }catch(e){}
+  }
 };
 let save = Store.get();
 if(save.music===undefined) save.music=true;
@@ -246,13 +286,16 @@ const Snd = {
     this.sfx=c.createGain(); this.sfx.gain.value=.6; this.sfx.connect(this.master); this.sfx.connect(this.verb);
     this.buildSong(); this.nextT=c.currentTime+.2;
     this.timer=setInterval(()=>this.tick(),60);
-    this.setMusic(save.music);
+    this.applyMusic(.6);
   },
-  setMusic(on){ save.music=on; Store.set(save); if(!this.ctx) return;
+  ext:false,   // true while songs from the music folder are playing (the app plays them; the waltz rests)
+  setMusic(on){ save.music=on; Store.set(save);
+    try{ if(window.AndroidMusic) AndroidMusic.setEnabled(on); }catch(e){}
+    this.applyMusic(.6); },
+  applyMusic(fade){ if(!this.ctx) return; const on=save.music && !this.ext;
     const g=this.music.gain, t=this.ctx.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value,t);
-    g.linearRampToValueAtTime(on? .16*this.duck : 0, t+.6); },
-  setDuck(d){ this.duck=d; if(this.ctx && save.music){ const g=this.music.gain,t=this.ctx.currentTime;
-    g.cancelScheduledValues(t); g.setValueAtTime(g.value,t); g.linearRampToValueAtTime(.16*d,t+.25);} },
+    g.linearRampToValueAtTime(on? .16*this.duck : 0, t+fade); },
+  setDuck(d){ this.duck=d; try{ if(window.AndroidMusic) AndroidMusic.duck(d<1); }catch(e){} this.applyMusic(.25); },
   // an original little waltz in C (3/4). [midi, beats]
   buildSong(){
     const mel=[[[76,1],[79,1],[84,1]],[[83,2],[81,1]],[[79,1],[76,1],[72,1]],[[74,3]],
@@ -285,7 +328,16 @@ const Snd = {
     g.connect(dest); g2.connect(dest); o.start(t); o2.start(t); o.stop(t+len+.05); o2.stop(t+.3); },
   play(kind){
     const c=this.ctx; if(!c) return; const t=c.currentTime+.01;
-    if(kind==="move"){ this.tine(this.sfx,t,96,.08,.18); }
+    if(kind==="move"){ // a bubbly "bloop" that hops around a happy scale
+      const scale=[72,74,76,79,81,84,86,88]; this.mi=((this.mi||0)+1+Math.floor(Math.random()*2))%scale.length;
+      const f=440*Math.pow(2,(scale[this.mi]-69)/12), o=c.createOscillator(), g=c.createGain();
+      o.type="sine"; o.frequency.setValueAtTime(f*.75,t); o.frequency.exponentialRampToValueAtTime(f*1.35,t+.07); o.frequency.exponentialRampToValueAtTime(f,t+.13);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.012); g.gain.exponentialRampToValueAtTime(.001,t+.2);
+      o.connect(g); g.connect(this.sfx); o.start(t); o.stop(t+.22);
+      this.tine(this.sfx,t+.03,scale[this.mi]+12,.05,.25); }
+    else if(kind==="hop"){ [0,1,2].forEach(k=>{ const o=c.createOscillator(), g=c.createGain(), tt=t+k*.09, f=520+k*140;
+      o.type="triangle"; o.frequency.setValueAtTime(f,tt); o.frequency.exponentialRampToValueAtTime(f*1.8,tt+.08);
+      g.gain.setValueAtTime(.12,tt); g.gain.exponentialRampToValueAtTime(.001,tt+.12); o.connect(g); g.connect(this.sfx); o.start(tt); o.stop(tt+.13); }); }
     else if(kind==="right"){ this.tine(this.sfx,t,84,.35,1); this.tine(this.sfx,t+.09,91,.3,1.2); }
     else if(kind==="bzz"){ // gentle low buzz
       const o=c.createOscillator(), f=c.createBiquadFilter(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain();
@@ -323,6 +375,7 @@ const TTS = {
 };
 window.__ttsDone = id => { const f=TTS.waiters[id]; if(f) f(); };
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
+window.__extMusic = on => { Snd.ext=!!on; Snd.applyMusic(1.2); };
 
 /* =====================================================================
    ART: an original storybook Alice (pinafore + hair band)
@@ -376,7 +429,7 @@ if(window.visualViewport) visualViewport.addEventListener("resize",fitStage);
 setInterval(fitStage,700); fitStage();
 
 function show(name){ fitStage(); document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===name)); screen=name; }
-function focusables(){ return [...document.querySelectorAll(`#${screen} .fx`)].filter(e=>!e.classList.contains("gone")); }
+function focusables(){ return [...document.querySelectorAll(`#${screen} .fx`)].filter(e=>!e.classList.contains("gone") && e.offsetParent!==null); }
 function setFocus(el, sound){ if(focusEl===el) return; if(focusEl) focusEl.classList.remove("focus"); focusEl=el; if(el){ el.classList.add("focus"); if(sound) Snd.play("move"); } }
 function center(el){ const r=el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}; }
 function moveFocus(dir){
@@ -444,6 +497,7 @@ function activate(el){
     else { el.dataset.armed="1"; el.innerHTML="Press again to erase"; setTimeout(()=>{delete el.dataset.armed; el.innerHTML="↺ Start over";},3000); }
   }
   else if(a==="music"){ Snd.setMusic(!save.music); el.innerHTML="🎵 Music: "+(save.music?"On":"Off"); }
+  else if(a==="folder"){ try{ AndroidMusic.openSettings(); }catch(e){} }
   else if(a==="hint1") hint1();
   else if(a==="hint2") hint2();
   else if(a==="tomap") goMap();
@@ -457,6 +511,13 @@ function makeCard(letter, suitIdx){
   const [s,col]=SUITS[suitIdx%4], L=letter.toUpperCase(), d=document.createElement("div");
   d.className="card fx "+col; d.dataset.letter=letter;
   d.innerHTML=`<div class="tl">${L}<br>${s}</div><div class="mid">${L}</div><div class="br">${L}<br>${s}</div>`;
+  return d;
+}
+
+function makePicCard(word, pic, k){
+  const [s,col]=SUITS[k%4], d=document.createElement("div");
+  d.className="card pic fx "+col; d.dataset.word=word;
+  d.innerHTML=`<div class="tl">${s}</div><div class="mid">${pic}</div><div class="br">${s}</div>`;
   return d;
 }
 
@@ -517,7 +578,8 @@ function buildMap(){
 function refreshMap(animate){
   document.querySelectorAll(".node").forEach(n=>{ const i=+n.dataset.i, lv=LEVELS[i], st=save.stars[i];
     n.className="node"+(i>save.unlocked?" locked":"")+(st?" done":"")+(i===save.unlocked?" current":"")+(i===mapSel?" sel":"");
-    n.innerHTML = i>save.unlocked ? "🔒" : (st ? lv.pic : (i+1)) + (st? `<div class="stars">${"⭐".repeat(st)}</div>`:"");
+    n.innerHTML = (i>save.unlocked ? "🔒" : (st ? lv.pic : (i+1))) + (st? `<div class="stars">${"⭐".repeat(st)}</div>`:"")
+      + (lv.kind==="pick" ? `<div class="badge">🃏</div>` : "");
   });
   const a=$("mapAlice"), p=nodePos[mapSel];
   if(!animate){ a.style.transition="none"; }
@@ -527,7 +589,7 @@ function refreshMap(animate){
   if(!animate){ w.style.transition="none"; } w.style.transform=`translateX(${-cam}px)`; if(!animate){ void w.offsetWidth; w.style.transition=""; }
   $("mapPoints").textContent="💖 "+save.points;
 }
-function selectNode(i){ if(i<0||i>save.unlocked||i>=LEVELS.length||i===mapSel) return false; mapSel=i; Snd.play("step");
+function selectNode(i){ if(i<0||i>save.unlocked||i>=LEVELS.length||i===mapSel) return false; mapSel=i; Snd.play("hop");
   $("mapAlice").classList.remove("hop"); void $("mapAlice").offsetWidth; $("mapAlice").classList.add("hop"); refreshMap(true); return true; }
 function goMap(){ TTS.stop(); busy=false; setFocus(null); show("map");
   mapSel=Math.min(mapSel, save.unlocked); refreshMap(false); }
@@ -549,11 +611,12 @@ for(let side=0;side<2;side++) for(let r=0;r<5;r++) for(let c=0;c<4;c++)
 
 function startLevel(i){
   const lv=LEVELS[i]; mapSel=i;
-  cur={i, word:lv.word, filled:0, mistakes:0};
+  cur={i, word:lv.word, kind:lv.kind, filled:0, mistakes:0};
   show("level"); busy=false;
-  $("lvlTitle").textContent=`Level ${i+1} · ${WORLDS[lv.w].name}`;
+  $("lvlTitle").textContent = lv.kind==="pick" ? `Level ${i+1} · Find the picture!` : `Level ${i+1} · ${WORLDS[lv.w].name}`;
   $("lvlPoints").textContent="💖 "+save.points;
-  const pic=$("pic"); pic.textContent=lv.pic; pic.classList.remove("pop"); void pic.offsetWidth; pic.classList.add("pop");
+  const pic=$("pic"); pic.textContent = lv.kind==="pick" ? "❔" : lv.pic; pic.classList.remove("pop"); void pic.offsetWidth; pic.classList.add("pop");
+  if(lv.kind==="pick"){ startPickLevel(lv); return; }
   // blank lines
   const sl=$("slots"); sl.innerHTML=""; const n=lv.word.length, w=78, gap=16, tot=n*w+(n-1)*gap, x0=(600-tot)/2;
   for(let k=0;k<n;k++){ const s=document.createElement("div"); s.className="slot"+(k===0?" next":""); s.style.left=(x0+k*(w+gap))+"px"; s.style.top="0px"; sl.appendChild(s); }
@@ -570,8 +633,41 @@ function startLevel(i){
 }
 function slotEls(){ return [...$("slots").children]; }
 
+/* FIND THE PICTURE: the word is spelled out, the cards show pictures, pick the one that matches */
+const PIC_SPOTS=[{x:64,y:140},{x:290,y:170},{x:84,y:470},{x:300,y:500},{x:1160,y:150},{x:1384,y:130},{x:1150,y:480},{x:1370,y:460}];
+function startPickLevel(lv){
+  const sl=$("slots"); sl.innerHTML=""; const n=lv.word.length, w=78, gap=16, tot=n*w+(n-1)*gap, x0=(600-tot)/2;
+  for(let k=0;k<n;k++){ const d=document.createElement("div"); d.className="slot filled"; d.textContent=lv.word[k].toUpperCase();
+    d.style.left=(x0+k*(w+gap))+"px"; d.style.top="0px"; sl.appendChild(d); }
+  // the right picture + 7 others, never two of the same picture or a look-alike word
+  const others=ALL_PICS.filter(([word,pic])=>pic!==lv.pic && word!==lv.word).sort(()=>Math.random()-.5).slice(0,7);
+  const hand=[[lv.word,lv.pic],...others].sort(()=>Math.random()-.5);
+  const cards=$("cards"); cards.innerHTML="";
+  hand.forEach(([word,pic],k)=>{ const c=makePicCard(word,pic,k), sp=PIC_SPOTS[k];
+    c.style.left=(sp.x+(Math.random()*16-8))+"px"; c.style.top=(sp.y+(Math.random()*16-8))+"px";
+    c.style.setProperty("--rot",(Math.random()*14-7).toFixed(1)+"deg"); cards.appendChild(c); });
+  setFocus($("btnHint1"));
+}
+async function pickPicture(card){
+  const got=card.dataset.word;
+  if(got!==cur.word){
+    cur.mistakes++; Snd.play("bzz"); card.classList.remove("wrong"); void card.offsetWidth; card.classList.add("wrong");
+    busy=true; await sleep(350); await TTS.say("That's a "+got,.9); busy=false;   // learn the word for that picture too
+    return;
+  }
+  busy=true; Snd.play("right");
+  card.classList.add("flying"); card.style.left=(800-75)+"px"; card.style.top=(318-105)+"px";
+  document.querySelectorAll("#cards .card").forEach(c=>{ if(c!==card) c.style.opacity=".35"; });
+  setFocus(null);
+  await sleep(600);
+  card.classList.add("gone");
+  const pic=$("pic"); pic.textContent=LEVELS[cur.i].pic; pic.classList.remove("pop"); void pic.offsetWidth; pic.classList.add("pop");
+  levelDone();
+}
+
 async function pickCard(card){
   if(busy || !cur) return;
+  if(cur.kind==="pick") return pickPicture(card);
   const want=cur.word[cur.filled], got=card.dataset.letter;
   if(got!==want){ cur.mistakes++; Snd.play("bzz"); card.classList.remove("wrong"); void card.offsetWidth; card.classList.add("wrong"); return; }
   busy=true; Snd.play("right");
@@ -611,7 +707,7 @@ function confetti(n){ const st=$("stage"); const bits=["💖","✨","♥","⭐",
     if("♥♦".includes(e.textContent)) e.style.color="#e2365e"; st.appendChild(e); setTimeout(()=>e.remove(),5200); } }
 
 async function levelDone(){
-  const i=cur.i, m=cur.mistakes, stars=m===0?3:(m<=2?2:1), pts=10+(m===0?5:0);
+  const i=cur.i, m=cur.mistakes, stars=m===0?3:(m<=(cur.kind==="pick"?1:2)?2:1), pts=10+(m===0?5:0);
   const first=!save.stars[i];
   save.stars[i]=Math.max(save.stars[i]||0,stars); save.points+=pts;
   const isLast=i===LEVELS.length-1;
@@ -641,6 +737,7 @@ async function levelDone(){
 /* =====================================================================
    GO
    ===================================================================== */
+if(window.AndroidMusic){ document.body.classList.add("app"); try{ AndroidMusic.setEnabled(save.music); }catch(e){} }
 buildTitle(); buildMap(); mapSel=Math.min(save.unlocked,LEVELS.length-1); goTitle();
 </script>
 </body>
