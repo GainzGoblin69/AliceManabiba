@@ -223,6 +223,21 @@ class MainActivity : Activity() {
             engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, id)
         }
 
+        /** Says one letter by its name ("ay", "bee", "eye"), using the voice's spell-out mode instead of guessing from text. */
+        @JavascriptInterface
+        fun speakLetter(letter: String, rate: Float, id: String) {
+            val engine = tts
+            if (!ttsReady || engine == null || letter.isEmpty()) {
+                done(id)
+                return
+            }
+            val ch = letter.take(1).uppercase()
+            val text = android.text.SpannableString(ch)
+            text.setSpan(android.text.style.TtsSpan.VerbatimBuilder(ch).build(), 0, ch.length, android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+            engine.setSpeechRate(rate.coerceIn(0.3f, 2f))
+            engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, id)
+        }
+
         @JavascriptInterface
         fun stop() {
             tts?.stop()
