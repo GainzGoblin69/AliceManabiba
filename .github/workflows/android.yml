@@ -1,0 +1,64 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease -PbuildNumber=$BUILD_NUMBER --stacktrace --no-daemon
+
+      - name: Collect the APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk out/AliceManabiba.apk
+          # version.txt: the build number, so the app can tell when a newer one is out (in-app updates)
+          printf "%s" "$BUILD_NUMBER" > out/version.txt
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AliceManabiba-build-${{ github.run_number }}
+          path: out/AliceManabiba.apk
+
+      - name: Publish as the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          for try in 1 2 3 4 5 6; do
+            if gh release create latest out/AliceManabiba.apk out/version.txt \
+                --title "Alice Manabiba build $BUILD_NUMBER" \
+                --notes "Build $BUILD_NUMBER from ${GITHUB_SHA:0:7}. Download AliceManabiba.apk below, or choose Update in the app." \
+                --latest; then
+              exit 0
+            fi
+            sleep 10
+            gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+          done
+          exit 1

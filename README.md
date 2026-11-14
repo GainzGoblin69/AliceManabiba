@@ -1,0 +1,36 @@
+# Alice Manabiba
+
+A word and letter game for Android TV, set in Wonderland. A picture appears in the looking-glass, blank lines
+show how many letters the word has, and the whole alphabet is scattered around as playing cards. Pick the
+letters in order with the remote or a controller to spell the word, then walk Alice along the path to the next one.
+
+## Controls
+
+| | Remote | Controller | Keyboard / mouse |
+|---|---|---|---|
+| Move | D-pad | D-pad or left stick | Arrow keys / point |
+| Pick a card | OK | A | Enter / click |
+| Hint 1: hear the word | (focus "Hear it") | X | 1 |
+| Hint 2: hear it spelled | (focus "Spell it") | Y | 2 |
+| Back to map / title | Back | B | Esc |
+
+A wrong card gives a soft buzz. Each word is worth 10 hearts, plus 5 for no wrong picks, and earns up to 3 stars.
+Hints are free. There are 40 words over 8 Wonderland stops, from three letters up to six.
+
+## How it's built
+
+- `app/src/main/assets/game/index.html` is the whole game: art, music box waltz and sound effects are drawn
+  and synthesized in code, so there are no image or audio files. It also runs in any browser for testing.
+- `MainActivity.kt` shows it full screen and adds the Android voice (TextToSpeech) for hints, remote and
+  controller buttons, and saving progress.
+- **Updates:** every push to `main` builds a new APK and publishes it as the `latest` release
+  (`.github/workflows/android.yml`). The app checks that release when it opens and offers the newer build.
+  The APK is signed with the repo's `debug.keystore`, so every build installs over the last one.
+
+Local build: `./gradlew :app:assembleRelease -PbuildNumber=1`
+
+## Adding words
+
+Edit `WORLDS` near the top of the script in `index.html`: each word is `["word","emoji"]`.
+
+Alice's Adventures in Wonderland (1865) is in the public domain; the art here is original.
