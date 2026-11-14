@@ -26,8 +26,8 @@ import java.net.URLDecoder
 object BackgroundMusic {
     data class Settings(val url: String, val password: String, val enabled: Boolean)
 
-    /** Where RomM TV's music lives; suggested the first time. */
-    const val SUGGESTED = "https://music.alice99.box.ca/music/"
+    /** Alice Game folder on Whatbox (~/files/Alice Game), shared by Copyparty as /alice/; suggested the first time. */
+    const val SUGGESTED = "https://music.alice99.box.ca/alice/"
     private const val PREFS = "music"
     private const val TAG = "BackgroundMusic"
     private val AUDIO = setOf("mp3", "ogg", "oga", "opus", "m4a", "aac", "flac", "wav")
