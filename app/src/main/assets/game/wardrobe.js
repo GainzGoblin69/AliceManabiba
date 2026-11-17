@@ -4,6 +4,7 @@
    dress-up Alice drawn from whatever she's wearing.
    Prices: a word earns 10-15 hearts, so the first things cost ~10.
    ===================================================================== */
+const HRT = '<span class="hrt">♥\uFE0E</span>';
 const WARDROBE = {
   hairColor: { label: "Hair color", icon: "🎨", view: "head", items: [
     { id: "golden", name: "Golden", price: 0, c: "#f0c454" },
@@ -46,7 +47,8 @@ const WARDROBE = {
     { id: "gown", name: "Ball gown", price: 90 },
   ]},
   dressColor: { label: "Colors", icon: "🌈", view: "outfit", items: [
-    { id: "rose", name: "Rose", price: 0, c: "#e2557a" },
+    { id: "alice", name: "Alice blue", price: 0, c: "#6fa3d6" },
+    { id: "rose", name: "Rose", price: 0, c: "#d9607a" },
     { id: "skyblue", name: "Sky", price: 10, c: "#7fb6ea" },
     { id: "lilac", name: "Lilac", price: 10, c: "#b394e6" },
     { id: "mintgreen", name: "Mint", price: 10, c: "#7fd3b0" },
@@ -85,7 +87,7 @@ const WARDROBE = {
   ]},
 };
 const WARD_ORDER = ["hairColor", "hairStyle", "outfit", "dressColor", "extra", "skin"];
-const DEFAULT_LOOK = { hairColor: "golden", hairStyle: "long", outfit: "pinafore", dressColor: "rose", extra: "band", skin: "s1" };
+const DEFAULT_LOOK = { hairColor: "golden", hairStyle: "long", outfit: "pinafore", dressColor: "alice", extra: "band", skin: "s1" };
 
 function itemOf(cat, id) { const list = WARDROBE[cat].items; return list.find(i => i.id === id) || list[0]; }
 function cleanLook(look) {
@@ -131,7 +133,7 @@ function aliceSVG(look, view) {
 
   // ---- hair behind the head
   const cap = `<circle cx="50" cy="44" r="24" fill="${H}"/>`;
-  if (style === "long") P.push(`<path d="M24 44 Q16 92 30 104 L70 104 Q84 92 76 44 Z" fill="${H}"/>`);
+  if (style === "long") P.push(`<path d="M24 44 Q14 70 20 88 Q16 100 30 106 Q50 110 70 106 Q84 100 80 88 Q86 70 76 44 Z" fill="${H}"/><path d="M24 60 Q20 80 26 100 M30 70 Q28 88 34 104 M76 60 Q80 80 74 100 M70 70 Q72 88 66 104" fill="none" stroke-width=".7" opacity=".5"/>`);
   else if (style === "wavy") P.push(`<path d="M25 42 Q13 58 21 70 Q11 82 20 94 Q13 106 28 112 L72 112 Q87 106 80 94 Q89 82 79 70 Q87 58 75 42 Z" fill="${H}"/>`);
   else if (style === "bob") P.push(`<path d="M24 42 Q19 66 28 73 Q50 78 72 73 Q81 66 76 42 Z" fill="${H}"/>`);
   else if (style === "ponytail") P.push(cap, `<path d="M64 30 Q100 38 90 100 Q84 108 79 98 Q86 62 66 44 Z" fill="${H}"/>`);
@@ -147,7 +149,7 @@ function aliceSVG(look, view) {
 
   // ---- legs and shoes
   const legTop = { party: 108, overalls: 146, gown: 999 }[outfit] || 132;
-  if (legTop < 160) P.push(`<rect x="38" y="${legTop}" width="8" height="${160 - legTop}" rx="3" fill="#fff"/><rect x="54" y="${legTop}" width="8" height="${160 - legTop}" rx="3" fill="#fff"/>`);
+  if (legTop < 160) P.push(`<rect x="38" y="${legTop}" width="8" height="${160 - legTop}" rx="3" fill="#fff"/><rect x="54" y="${legTop}" width="8" height="${160 - legTop}" rx="3" fill="#fff"/><path d="M38 146 h8 M38 152 h8 M54 146 h8 M54 152 h8" fill="none" stroke="#6fa3d6" stroke-width="1.6"/>`);
   const shoe = outfit === "gown" ? 164 : 162;
   P.push(`<ellipse cx="42" cy="${shoe}" rx="8" ry="5" fill="#2a1b2e"/><ellipse cx="58" cy="${shoe}" rx="8" ry="5" fill="#2a1b2e"/>`);
 
@@ -156,7 +158,7 @@ function aliceSVG(look, view) {
   let puff = false;
   switch (outfit) {
     case "pinafore":
-      P.push(dress, `<path d="M38 80 L62 80 L72 136 Q50 143 28 136 Z" fill="#fffaf2"/><path d="M38 80 L62 80 L60 92 L40 92 Z" fill="#fffaf2" stroke="#f0d7df" stroke-width="1.5"/>`);
+      P.push(dress, `<path d="M38 80 L62 80 L72 136 Q50 143 28 136 Z" fill="#fffaf2"/><path d="M38 80 L62 80 L60 92 L40 92 Z" fill="#fffaf2"/><path d="M37 82 Q28 76 31 88 Q34 84 39 88 Z M63 82 Q72 76 69 88 Q66 84 61 88 Z" fill="#fffaf2"/><path d="M36 93 Q50 97 64 93" fill="none" stroke-width="1"/><path d="M36 112 q5 5 10 0 M54 112 q5 5 10 0" fill="none" stroke="#b9382f" stroke-width="1.4"/><path d="M30 134 Q50 141 70 134" fill="none" stroke="#b9382f" stroke-width="1.2"/>`);
       break;
     case "dots":
       P.push(dress, `<g fill="#fff">${[[30, 112], [44, 124], [58, 108], [70, 128], [38, 138], [62, 140], [50, 96], [26, 132], [74, 112], [52, 132]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2"/>`).join("")}</g><path d="M38 76 Q50 90 62 76 Z" fill="#fff"/>`);
@@ -187,13 +189,13 @@ function aliceSVG(look, view) {
       puff = true; break;
   }
   // arms, then puffy sleeves over the shoulders
-  P.push(`<path d="M34 78 Q24 96 22 110" stroke="${skin}" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M66 78 Q76 96 78 110" stroke="${skin}" stroke-width="7" stroke-linecap="round" fill="none"/>`);
+  P.push(`<path d="M34 78 Q24 96 22 110 M66 78 Q76 96 78 110" stroke="#2e2016" stroke-width="9.3" fill="none"/><path d="M34 78 Q24 96 22 110 M66 78 Q76 96 78 110" stroke="${skin}" stroke-width="7" fill="none"/>`);
   if (puff) P.push(`<circle cx="34" cy="80" r="7.5" fill="${L}"/><circle cx="66" cy="80" r="7.5" fill="${L}"/>`);
 
   // ---- head and face
   P.push(`<rect x="45" y="64" width="10" height="14" fill="${skin}"/><circle cx="50" cy="46" r="22" fill="${skin}"/>`);
-  if (extra !== "glasses") P.push(`<circle cx="42" cy="48" r="3" fill="#3a2246"/><circle cx="58" cy="48" r="3" fill="#3a2246"/><circle cx="43" cy="47" r="1" fill="#fff"/><circle cx="59" cy="47" r="1" fill="#fff"/>`);
-  P.push(`<circle cx="37" cy="55" r="4" fill="#f7a6b6" opacity=".6"/><circle cx="63" cy="55" r="4" fill="#f7a6b6" opacity=".6"/><path d="M44 57 Q50 62 56 57" stroke="#b03a5a" stroke-width="2.2" fill="none" stroke-linecap="round"/>`);
+  if (extra !== "glasses") P.push(`<ellipse cx="42" cy="48.5" rx="2.3" ry="2.9" fill="#2e2016" stroke="none"/><ellipse cx="58" cy="48.5" rx="2.3" ry="2.9" fill="#2e2016" stroke="none"/><circle cx="42.8" cy="47.4" r=".9" fill="#fff" stroke="none"/><circle cx="58.8" cy="47.4" r=".9" fill="#fff" stroke="none"/><path d="M38.6 46.4 Q41 44 44.6 45.6 M55.4 45.6 Q59 44 61.4 46.4" fill="none" stroke-width="1"/><path d="M38.5 42.5 Q42 40.6 45.5 42 M54.5 42 Q58 40.6 61.5 42.5" fill="none" stroke-width=".8" opacity=".7"/>`);
+  P.push(`<circle cx="37" cy="55" r="4" fill="#f7a6b6" opacity=".6" stroke="none"/><circle cx="63" cy="55" r="4" fill="#f7a6b6" opacity=".6" stroke="none"/><path d="M49.4 51.5 Q48.6 54 50.6 54.4" fill="none" stroke-width=".9" opacity=".7"/><path d="M45 58 Q50 61.6 55 58" stroke="#b03a3a" stroke-width="1.8" fill="none"/>`);
 
   // ---- hair at the sides and in front
   if (style === "pigtails") P.push(`<ellipse cx="21" cy="60" rx="9" ry="17" transform="rotate(22 21 60)" fill="${H}"/><ellipse cx="79" cy="60" rx="9" ry="17" transform="rotate(-22 79 60)" fill="${H}"/><circle cx="26" cy="45" r="4" fill="#ff6fa3"/><circle cx="74" cy="45" r="4" fill="#ff6fa3"/>`);
@@ -204,7 +206,7 @@ function aliceSVG(look, view) {
   }
   if (style === "curly") P.push(`<g fill="${H}" stroke="${HD}" stroke-width="1"><circle cx="35" cy="30" r="9"/><circle cx="45" cy="25" r="9"/><circle cx="56" cy="25" r="9"/><circle cx="66" cy="31" r="9"/></g>`);
   else if (style === "bob") P.push(`<path d="M27 48 Q25 20 50 20 Q75 20 73 48 Q70 30 56 30 Q60 36 44 36 Q32 34 27 48 Z" fill="${H}"/>`);
-  else P.push(`<path d="M27 46 Q26 20 50 20 Q74 20 73 46 Q68 32 50 32 Q32 32 27 46 Z" fill="${H}"/>`);
+  else P.push(`<path d="M27 46 Q26 20 50 20 Q74 20 73 46 Q68 32 50 32 Q32 32 27 46 Z" fill="${H}"/><path d="M36 24 Q31 30 30 38 M44 21.5 Q40 26 39 32 M56 21.5 Q60 26 61 32 M64 24 Q69 30 70 38" fill="none" stroke-width=".7" opacity=".55"/>`);
 
   // ---- extras
   switch (extra) {
@@ -219,7 +221,7 @@ function aliceSVG(look, view) {
     case "tophat": P.push(`<g transform="rotate(12 58 18)"><ellipse cx="58" cy="22" rx="22" ry="5" fill="#3a2a4a"/><rect x="45" y="-8" width="26" height="30" rx="2" fill="#3a2a4a"/><rect x="45" y="12" width="26" height="6" fill="${C}"/><rect x="62" y="2" width="10" height="7" fill="#fff" stroke="#ccc" stroke-width=".6"/><text x="67" y="7.6" font-size="4.2" text-anchor="middle" fill="#333">10/6</text></g>`); break;
     case "crown": P.push(`<path d="M32 30 L32 10 L41 20 L50 2 L59 20 L68 10 L68 30 Z" fill="#ffd34d" stroke="#c9962a" stroke-width="1.4"/><rect x="32" y="25" width="36" height="6" fill="#f0b830"/><circle cx="50" cy="16" r="3.4" fill="#e23b4f"/><circle cx="40" cy="28" r="2" fill="#7cc4f2"/><circle cx="60" cy="28" r="2" fill="#7fd3b0"/>`); break;
   }
-  return `<svg viewBox="${VIEWS[view || "body"]}" xmlns="http://www.w3.org/2000/svg"><defs>${defs}</defs>${P.join("")}</svg>`;
+  return `<svg viewBox="${VIEWS[view || "body"]}" xmlns="http://www.w3.org/2000/svg"><defs>${defs}</defs><g stroke="#2e2016" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round">${P.join("")}</g></svg>`;
 }
 
 /* ---------- the wardrobe screen ---------- */
@@ -227,7 +229,7 @@ let wardTab = "hairColor";
 
 function goWardrobe() {
   TTS.stop(); busy = false; setFocus(null); show("wardrobe");
-  $("wardPoints").textContent = "💖 " + save.points;
+  $("wardPoints").innerHTML = HRT + " " + save.points;
   buildWardTabs(); showWardTab(wardTab);
   setFocus(document.querySelector(`#wardTabs .tab[data-tab="${wardTab}"]`));
   wardMsg("Pick a tab, then try things on!");
@@ -262,9 +264,9 @@ function refreshTiles() {
     const look = Object.assign({}, save.look, { [cat]: it.id });
     d.classList.toggle("wearing", wearing); d.classList.toggle("locked", !mine);
     d.innerHTML = `<div class="pv">${aliceSVG(look, WARDROBE[cat].view)}</div><div class="nm">${it.name}</div>`
-      + `<div class="pr">${wearing ? "✨ Wearing" : mine ? "✓ Yours" : (save.points >= it.price ? "" : "🔒 ") + it.price + " 💖"}</div>`;
+      + `<div class="pr">${wearing ? "Wearing" : mine ? "✓ Yours" : it.price + " " + HRT}</div>`;
   });
-  $("wardPoints").textContent = "💖 " + save.points;
+  $("wardPoints").innerHTML = HRT + " " + save.points;
 }
 /* focusing a tile tries it on; focusing a tab opens it */
 function wardFocus(el) {
@@ -273,10 +275,10 @@ function wardFocus(el) {
   if (el.dataset.item) {
     const cat = el.dataset.cat, it = itemOf(cat, el.dataset.item);
     wardPreview(Object.assign({}, save.look, { [cat]: it.id }));
-    if (save.look[cat] === it.id) wardMsg(`${it.name} ✨ wearing it now`);
+    if (save.look[cat] === it.id) wardMsg(`${it.name} · wearing it now`);
     else if (owns(save, cat, it.id)) wardMsg(`${it.name} · press OK to wear it`);
-    else if (save.points >= it.price) wardMsg(`${it.name} · press OK to buy it for <b>${it.price} 💖</b>`);
-    else wardMsg(`${it.name} costs ${it.price} 💖 · spell ${Math.ceil((it.price - save.points) / 10)} more word${it.price - save.points > 10 ? "s" : ""} to get it!`);
+    else if (save.points >= it.price) wardMsg(`${it.name} · press OK to buy it for <b>${it.price} ${HRT}</b>`);
+    else wardMsg(`${it.name} costs ${it.price} ${HRT} · spell ${Math.ceil((it.price - save.points) / 10)} more word${it.price - save.points > 10 ? "s" : ""} to get it!`);
   }
 }
 function wardPick(el) {
@@ -285,7 +287,7 @@ function wardPick(el) {
     save.look[cat] = it.id; Store.set(save); Snd.play("step");
   } else if (save.points >= it.price) {
     save.points -= it.price; save.owned[cat + ":" + it.id] = true; save.look[cat] = it.id; Store.set(save);
-    Snd.play("win"); confetti(24); TTS.say("Ooh, " + it.name + "!", .95);
+    Snd.play("win"); confetti(18); setTimeout(() => TTS.say("Ooh, " + it.name + "!", .95), 900);
   } else { Snd.play("bzz"); el.classList.remove("wrong"); void el.offsetWidth; el.classList.add("wrong"); return; }
   refreshTiles(); wardFocus(el); refreshAlice();
 }

@@ -82,8 +82,9 @@ object BackgroundMusic {
     /** The game's Music on/off switch. */
     fun setEnabled(on: Boolean) {
         main.post {
-            prefs().edit().putBoolean("enabled", on).apply()
+            prefs().edit().putBoolean("enabled", on).commit()
             if (on) resume() else if (player != null) fadeTo(0f, 700) { stopPlayer() }
+            updateWaltz()
         }
     }
 
@@ -92,6 +93,7 @@ object BackgroundMusic {
         main.post {
             ducked = on
             if (player?.isPlaying == true) fadeTo(target(), if (on) 250 else 900)
+            updateWaltz()
         }
     }
 
@@ -104,10 +106,12 @@ object BackgroundMusic {
     fun onForeground() {
         foreground = true
         resume()
+        main.post { updateWaltz() }
     }
 
     fun onBackground() {
         foreground = false
+        updateWaltz()
         fadeTo(0f, 600) { runCatching { player?.pause() } }
     }
 
@@ -141,6 +145,7 @@ object BackgroundMusic {
                 loading = false
                 tracks = list
                 if (list.isEmpty()) tell(false) else playNext()
+                updateWaltz()
             }
             if (cached.isNotEmpty()) {
                 val fresh = runCatching { scan(s.url, s.password) }.getOrNull()
@@ -165,7 +170,47 @@ object BackgroundMusic {
     }
 
     private fun tell(playing: Boolean) {
-        main.post { onPlaying?.invoke(playing) }
+        main.post {
+            folderPlaying = playing
+            updateWaltz()
+            onPlaying?.invoke(playing)
+        }
+    }
+
+    // ---------- the built-in music-box waltz, for when no folder is set or the server can't be reached ----------
+
+    private var waltz: MediaPlayer? = null
+    private var folderPlaying = false
+    private const val WALTZ = 0.55f
+    private const val WALTZ_DUCKED = 0.14f
+
+    private fun updateWaltz() {
+        val want = foreground && settings().enabled && !folderPlaying && player == null && !loading
+        val w = waltz
+        if (!want) {
+            runCatching { if (w?.isPlaying == true) w.pause() }
+            return
+        }
+        val v = if (ducked) WALTZ_DUCKED else WALTZ
+        if (w != null) {
+            runCatching {
+                w.setVolume(v, v)
+                if (!w.isPlaying) w.start()
+            }
+            return
+        }
+        runCatching {
+            val mp = MediaPlayer()
+            mp.setAudioAttributes(
+                AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build(),
+            )
+            app.assets.openFd("game/sfx/waltz.ogg").use { mp.setDataSource(it.fileDescriptor, it.startOffset, it.length) }
+            mp.isLooping = true
+            mp.setVolume(v, v)
+            mp.prepare()
+            mp.start()
+            waltz = mp
+        }.onFailure { Log.w(TAG, "Couldn't start the waltz", it) }
     }
 
     // ---------- playing ----------

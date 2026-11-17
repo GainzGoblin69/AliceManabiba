@@ -51,4 +51,12 @@ Local build: `./gradlew :app:assembleRelease -PbuildNumber=1`
 
 Edit `WORLDS` near the top of the script in `index.html`: each word is `["word","emoji"]`.
 
-Alice's Adventures in Wonderland (1865) is in the public domain; the art here is original.
+## Art and sound
+
+The look is an old storybook: parchment pages, ink outlines and watercolor color. The illustrations are John
+Tenniel's original 1865 engravings (public domain, taken from the Standard Ebooks edition, CC0), hand-tinted by
+`tools/tint.py`-style washes and stored in `app/src/main/assets/game/art`. The type is IM Fell English (SIL Open
+Font License). The dress-up Alice is drawn in code (`wardrobe.js`).
+
+Sound effects and the music-box waltz are audio files in `assets/game/sfx`, played by Android (SoundPool and
+MediaPlayer) so they stay smooth when the screen is busy. A web browser falls back to a built-in synth.

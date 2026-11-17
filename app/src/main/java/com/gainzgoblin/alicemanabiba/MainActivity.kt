@@ -33,6 +33,7 @@ class MainActivity : Activity() {
     private lateinit var web: WebView
     private var tts: TextToSpeech? = null
     private var ttsReady = false
+    private lateinit var sfx: Sfx
     private val main = Handler(Looper.getMainLooper())
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -65,6 +66,8 @@ class MainActivity : Activity() {
         web.addJavascriptInterface(TtsBridge(), "AndroidTTS")
         web.addJavascriptInterface(StoreBridge(), "AndroidStore")
         web.addJavascriptInterface(MusicBridge(), "AndroidMusic")
+        sfx = Sfx(this)
+        web.addJavascriptInterface(sfx, "AndroidSfx")
         BackgroundMusic.init(this)
         BackgroundMusic.onPlaying = { playing ->
             web.evaluateJavascript("window.__extMusic && window.__extMusic($playing)", null)
@@ -205,6 +208,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         tts?.shutdown()
+        sfx.release()
         web.destroy()
         super.onDestroy()
     }
